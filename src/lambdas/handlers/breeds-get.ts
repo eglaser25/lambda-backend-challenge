@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { Response } from './types'
+import { Response } from '../types'
 
 interface BreedResponse extends Response {
   body: string[]
@@ -10,18 +10,19 @@ interface ErrorResponse extends Response {
 }
 
 interface BreedPayload {
-  message: {
-    [key: string]: string[]
-  }
+  message: BreedMap
   status: string
 }
 
-function nestedToFlat(nested: { [key: string]: string[] }): string[] {
+interface BreedMap {
+  [key: string]: string[]
+}
+function nestedToFlat(nested: BreedMap): string[] {
   const results = []
   const mainBreeds = Object.keys(nested)
   for (let i = 0; i < mainBreeds.length; i += 1) {
     const currentBreed: string = mainBreeds[i]
-    if (nested[currentBreed].length === 0) {
+    if (!nested[currentBreed].length) {
       results.push(currentBreed)
     } else {
       for (let k = 0; k < nested[currentBreed].length; k += 1) {
@@ -48,17 +49,3 @@ export async function handler(): Promise<BreedResponse | ErrorResponse> {
     }
   }
 }
-
-
-/*
-for (const entry in data) {
-    let subBreed = data[entry]
-    if (subBreed.length === 0) {
-      results.push(subBreed)
-    } else {
-      for (let i = 0; i < subBreed.length; i++) {
-        results.push(subBreed[i] + entry)
-      }
-    }
-  }
-*/
